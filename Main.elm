@@ -13,10 +13,13 @@ type alias Position =
     y: Int
   }
 
-type alias Model = Position
+type alias Model = {
+  attitude: Direction,
+  body: List Position
+}
 
 init : ( Model, Cmd Msg )
-init = ( Position 100 100, Cmd.none )
+init = ( Model Up (List.map (\i -> (Position (50-i) 50)) (List.range 0 29) ), Cmd.none )
 
 type Msg =
   KeyCode Int
@@ -41,13 +44,19 @@ toDirection k =
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Tick time -> (model, Cmd.none)
+    Tick time -> ({ model |
+          body = updateBody model.attitude model.body,
+          attitude = model.attitude
+        }, Cmd.none)
     KeyCode k -> let
       dir = toDirection k
     in
       case dir of
         Nothing -> (model, Cmd.none)
-        Just d -> (updatePosition d model, Cmd.none)
+        Just d -> ({ model |
+          body = updateBody d model.body,
+          attitude = d
+        }, Cmd.none)
 
 updatePosition : Direction -> Position -> Position
 updatePosition d pos =
@@ -57,18 +66,28 @@ updatePosition d pos =
     Down -> Position pos.x (pos.y - 1)
     Left -> Position (pos.x - 1) pos.y
 
+initList : List a -> List a
+initList xs =
+  case xs of
+    [] -> []
+    [x] -> []
+    h::t -> h :: ( initList t )
+
+updateBody : Direction -> List Position -> List Position
+updateBody d body =
+  case body of
+    [] -> []
+    h :: _ -> (updatePosition d h) :: (initList body)
+
 view : Model -> Html.Html Msg
 view model =
   div []
     [
       div [style "float: left"]
         [
-          svg [ version "1.1", baseProfile "full", width "600",  height "600", viewBox "0 0 1000 1000", style "border: black 4px solid"]
+          svg [ version "1.1", baseProfile "full", width "600",  height "600", viewBox "0 0 100 100", style "border: black 4px solid"]
             [
-              g [ transform "matrix(1,0,0,-1,0,1000)" ]
-                [
-                  block model
-                ]
+              g [ transform "matrix(1,0,0,-1,0,100)" ] (List.map block model.body)
             ]
         ],
       div [style "float: right"] [text <| toString model]
@@ -76,13 +95,13 @@ view model =
 
 block : Position -> Html.Html Msg
 block pos =
-  rect [ x <| toString pos.x, y <| toString pos.y, width "10", height "10", fill "black", stroke "black"] []
+  rect [ x <| toString pos.x, y <| toString pos.y, width "1", height "1", fill "black", stroke "black"] []
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch [
-      Keyboard.downs KeyCode
-      -- AnimationFrame.times Tick
+      Keyboard.downs KeyCode,
+      AnimationFrame.times Tick
     ]
 
 
