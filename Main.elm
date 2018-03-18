@@ -1,10 +1,10 @@
-import Html exposing (text, div, h2, br)
+import Html exposing (text, div, h2, br, button)
 import Keyboard
-import Char
 import AnimationFrame
 import Time exposing (Time)
 import Svg exposing (svg, rect, g)
 import Svg.Attributes exposing (..)
+import Html.Events exposing (onClick)
 
 -- MODEL
 type alias Position =
@@ -15,15 +15,17 @@ type alias Position =
 
 type alias Model = {
   attitude: Direction,
-  body: List Position
+  body: List Position,
+  dead: Bool
 }
 
 init : ( Model, Cmd Msg )
-init = ( Model Up (List.map (\i -> (Position (50-i) 50)) (List.range 0 29) ), Cmd.none )
+init = ( Model Up (List.map (\i -> (Position (50-i) 50)) (List.range 0 29) ) False, Cmd.none )
 
 type Msg =
   KeyCode Int
   | Tick Time
+  | Restart
 
 type Direction =
   Up
@@ -40,23 +42,30 @@ toDirection k =
     40 -> Just Down
     _ -> Nothing
 
+isPerpendicular : Direction -> Direction -> Bool
+isPerpendicular d1 d2 =
+  if d1 == d2
+  then False
+  else let collapse = \d -> case d of
+    Down -> Up
+    Left -> Right
+    _ -> d
+  in
+    collapse d1 /= collapse d2
 
 update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
-    Tick time -> ({ model |
-          body = updateBody model.attitude model.body,
-          attitude = model.attitude
-        }, Cmd.none)
+    Tick time -> (Model model.attitude (updateBody model.attitude model.body) (isDead model), Cmd.none)
     KeyCode k -> let
       dir = toDirection k
     in
       case dir of
         Nothing -> (model, Cmd.none)
-        Just d -> ({ model |
-          body = updateBody d model.body,
-          attitude = d
-        }, Cmd.none)
+        Just d -> if isPerpendicular d model.attitude
+          then (Model d (updateBody d model.body) (isDead model), Cmd.none)
+          else (model, Cmd.none)
+    Restart -> init
 
 updatePosition : Direction -> Position -> Position
 updatePosition d pos =
@@ -79,30 +88,57 @@ updateBody d body =
     [] -> []
     h :: _ -> (updatePosition d h) :: (initList body)
 
+isDead : Model -> Bool
+isDead model =
+  case model.body of
+    [] -> True
+    h :: t -> (isOnBorder h)  || isHeadOnTail h t
+
+isOnBorder : Position -> Bool
+isOnBorder pos =
+  not <|
+  (0 < pos.x)
+  && (pos.x < 100)
+  && (0 < pos.y)
+  && (pos.y < 100)
+
+isHeadOnTail : Position -> List Position -> Bool
+isHeadOnTail h t = not <| List.isEmpty <| List.filter ((==) h) t
+
 view : Model -> Html.Html Msg
 view model =
-  div []
-    [
-      div [style "float: left"]
+  case model.dead of
+    True -> div []
+      [
+        h2 [] [text "Game Over"],
+        button [ onClick Restart ] [ text "Restart" ]
+      ]
+    False ->
+      div []
         [
-          svg [ version "1.1", baseProfile "full", width "600",  height "600", viewBox "0 0 100 100", style "border: black 4px solid"]
+          div [style "float: left"]
             [
-              g [ transform "matrix(1,0,0,-1,0,100)" ] (List.map block model.body)
-            ]
-        ],
-      div [style "float: right"] [text <| toString model]
-    ]
+              svg [ version "1.1", baseProfile "full", width "800",  height "800", viewBox "0 0 100 100", style "border: black 4px solid"]
+                [
+                  g [ transform "matrix(1,0,0,-1,0,100)" ] (List.map block model.body)
+                ]
+            ],
+          div [style "float: right"] [text <| toString model]
+        ]
 
 block : Position -> Html.Html Msg
 block pos =
-  rect [ x <| toString pos.x, y <| toString pos.y, width "1", height "1", fill "black", stroke "black"] []
+  rect [ x <| toString pos.x, y <| toString pos.y, width "1", height "1", fill "black"] []
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch [
-      Keyboard.downs KeyCode,
-      AnimationFrame.times Tick
-    ]
+  case model.dead of
+    True -> Sub.none
+    False ->
+      Sub.batch [
+        Keyboard.downs KeyCode,
+        AnimationFrame.times Tick
+      ]
 
 
 main : Program Never Model Msg
