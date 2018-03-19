@@ -9148,6 +9148,136 @@ var _elm_lang$svg$Svg_Attributes$additive = _elm_lang$virtual_dom$VirtualDom$att
 var _elm_lang$svg$Svg_Attributes$accumulate = _elm_lang$virtual_dom$VirtualDom$attribute('accumulate');
 var _elm_lang$svg$Svg_Attributes$accelerate = _elm_lang$virtual_dom$VirtualDom$attribute('accelerate');
 var _elm_lang$svg$Svg_Attributes$accentHeight = _elm_lang$virtual_dom$VirtualDom$attribute('accent-height');
+var _elm_lang$window$Native_Window = function()
+{
+
+var size = _elm_lang$core$Native_Scheduler.nativeBinding(function(callback)	{
+	callback(_elm_lang$core$Native_Scheduler.succeed({
+		width: window.innerWidth,
+		height: window.innerHeight
+	}));
+});
+
+return {
+	size: size
+};
+
+}();var _elm_lang$window$Window_ops = _elm_lang$window$Window_ops || {};
+_elm_lang$window$Window_ops['&>'] = F2(
+	function (task1, task2) {
+		return A2(
+			_elm_lang$core$Task$andThen,
+			function (_p0) {
+				return task2;
+			},
+			task1);
+	});
+var _elm_lang$window$Window$onSelfMsg = F3(
+	function (router, dimensions, state) {
+		var _p1 = state;
+		if (_p1.ctor === 'Nothing') {
+			return _elm_lang$core$Task$succeed(state);
+		} else {
+			var send = function (_p2) {
+				var _p3 = _p2;
+				return A2(
+					_elm_lang$core$Platform$sendToApp,
+					router,
+					_p3._0(dimensions));
+			};
+			return A2(
+				_elm_lang$window$Window_ops['&>'],
+				_elm_lang$core$Task$sequence(
+					A2(_elm_lang$core$List$map, send, _p1._0.subs)),
+				_elm_lang$core$Task$succeed(state));
+		}
+	});
+var _elm_lang$window$Window$init = _elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing);
+var _elm_lang$window$Window$size = _elm_lang$window$Native_Window.size;
+var _elm_lang$window$Window$width = A2(
+	_elm_lang$core$Task$map,
+	function (_) {
+		return _.width;
+	},
+	_elm_lang$window$Window$size);
+var _elm_lang$window$Window$height = A2(
+	_elm_lang$core$Task$map,
+	function (_) {
+		return _.height;
+	},
+	_elm_lang$window$Window$size);
+var _elm_lang$window$Window$onEffects = F3(
+	function (router, newSubs, oldState) {
+		var _p4 = {ctor: '_Tuple2', _0: oldState, _1: newSubs};
+		if (_p4._0.ctor === 'Nothing') {
+			if (_p4._1.ctor === '[]') {
+				return _elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing);
+			} else {
+				return A2(
+					_elm_lang$core$Task$andThen,
+					function (pid) {
+						return _elm_lang$core$Task$succeed(
+							_elm_lang$core$Maybe$Just(
+								{subs: newSubs, pid: pid}));
+					},
+					_elm_lang$core$Process$spawn(
+						A3(
+							_elm_lang$dom$Dom_LowLevel$onWindow,
+							'resize',
+							_elm_lang$core$Json_Decode$succeed(
+								{ctor: '_Tuple0'}),
+							function (_p5) {
+								return A2(
+									_elm_lang$core$Task$andThen,
+									_elm_lang$core$Platform$sendToSelf(router),
+									_elm_lang$window$Window$size);
+							})));
+			}
+		} else {
+			if (_p4._1.ctor === '[]') {
+				return A2(
+					_elm_lang$window$Window_ops['&>'],
+					_elm_lang$core$Process$kill(_p4._0._0.pid),
+					_elm_lang$core$Task$succeed(_elm_lang$core$Maybe$Nothing));
+			} else {
+				return _elm_lang$core$Task$succeed(
+					_elm_lang$core$Maybe$Just(
+						{subs: newSubs, pid: _p4._0._0.pid}));
+			}
+		}
+	});
+var _elm_lang$window$Window$subscription = _elm_lang$core$Native_Platform.leaf('Window');
+var _elm_lang$window$Window$Size = F2(
+	function (a, b) {
+		return {width: a, height: b};
+	});
+var _elm_lang$window$Window$MySub = function (a) {
+	return {ctor: 'MySub', _0: a};
+};
+var _elm_lang$window$Window$resizes = function (tagger) {
+	return _elm_lang$window$Window$subscription(
+		_elm_lang$window$Window$MySub(tagger));
+};
+var _elm_lang$window$Window$subMap = F2(
+	function (func, _p6) {
+		var _p7 = _p6;
+		return _elm_lang$window$Window$MySub(
+			function (_p8) {
+				return func(
+					_p7._0(_p8));
+			});
+	});
+_elm_lang$core$Native_Platform.effectManagers['Window'] = {pkg: 'elm-lang/window', init: _elm_lang$window$Window$init, onEffects: _elm_lang$window$Window$onEffects, onSelfMsg: _elm_lang$window$Window$onSelfMsg, tag: 'sub', subMap: _elm_lang$window$Window$subMap};
+var _user$project$Main$getViewBox = function (_p0) {
+	var _p1 = _p0;
+	return A2(
+		_elm_lang$core$Basics_ops['++'],
+		'0 0 ',
+		A2(
+			_elm_lang$core$Basics_ops['++'],
+			_elm_lang$core$Basics$toString(_p1.width),
+			' 100'));
+};
 var _user$project$Main$block = function (pos) {
 	return A2(
 		_elm_lang$svg$Svg$rect,
@@ -9187,30 +9317,31 @@ var _user$project$Main$isHeadOnTail = F2(
 					})(h),
 				t));
 	});
-var _user$project$Main$isOnBorder = function (pos) {
-	return !((_elm_lang$core$Native_Utils.cmp(0, pos.x) < 0) && ((_elm_lang$core$Native_Utils.cmp(pos.x, 100) < 0) && ((_elm_lang$core$Native_Utils.cmp(0, pos.y) < 0) && (_elm_lang$core$Native_Utils.cmp(pos.y, 100) < 0))));
-};
+var _user$project$Main$isOnBorder = F2(
+	function (grid, pos) {
+		return !((_elm_lang$core$Native_Utils.cmp(0, pos.x) < 0) && ((_elm_lang$core$Native_Utils.cmp(pos.x, grid.width) < 0) && ((_elm_lang$core$Native_Utils.cmp(0, pos.y) < 0) && (_elm_lang$core$Native_Utils.cmp(pos.y, grid.height) < 0))));
+	});
 var _user$project$Main$isDead = function (model) {
-	var _p0 = model.body;
-	if (_p0.ctor === '[]') {
+	var _p2 = model.body;
+	if (_p2.ctor === '[]') {
 		return true;
 	} else {
-		var _p1 = _p0._0;
-		return _user$project$Main$isOnBorder(_p1) || A2(_user$project$Main$isHeadOnTail, _p1, _p0._1);
+		var _p3 = _p2._0;
+		return A2(_user$project$Main$isOnBorder, model.grid, _p3) || A2(_user$project$Main$isHeadOnTail, _p3, _p2._1);
 	}
 };
 var _user$project$Main$initList = function (xs) {
-	var _p2 = xs;
-	if (_p2.ctor === '[]') {
+	var _p4 = xs;
+	if (_p4.ctor === '[]') {
 		return {ctor: '[]'};
 	} else {
-		if (_p2._1.ctor === '[]') {
+		if (_p4._1.ctor === '[]') {
 			return {ctor: '[]'};
 		} else {
 			return {
 				ctor: '::',
-				_0: _p2._0,
-				_1: _user$project$Main$initList(_p2._1)
+				_0: _p4._0,
+				_1: _user$project$Main$initList(_p4._1)
 			};
 		}
 	}
@@ -9221,8 +9352,8 @@ var _user$project$Main$Position = F2(
 	});
 var _user$project$Main$updatePosition = F2(
 	function (d, pos) {
-		var _p3 = d;
-		switch (_p3.ctor) {
+		var _p5 = d;
+		switch (_p5.ctor) {
 			case 'Up':
 				return A2(_user$project$Main$Position, pos.x, pos.y + 1);
 			case 'Right':
@@ -9235,25 +9366,33 @@ var _user$project$Main$updatePosition = F2(
 	});
 var _user$project$Main$updateBody = F2(
 	function (d, body) {
-		var _p4 = body;
-		if (_p4.ctor === '[]') {
+		var _p6 = body;
+		if (_p6.ctor === '[]') {
 			return {ctor: '[]'};
 		} else {
 			return {
 				ctor: '::',
-				_0: A2(_user$project$Main$updatePosition, d, _p4._0),
+				_0: A2(_user$project$Main$updatePosition, d, _p6._0),
 				_1: _user$project$Main$initList(body)
 			};
 		}
 	});
-var _user$project$Main$Model = F3(
-	function (a, b, c) {
-		return {attitude: a, body: b, dead: c};
+var _user$project$Main$Grid = F2(
+	function (a, b) {
+		return {width: a, height: b};
+	});
+var _user$project$Main$Model = F4(
+	function (a, b, c, d) {
+		return {attitude: a, body: b, dead: c, grid: d};
+	});
+var _user$project$Main$Resize = F2(
+	function (a, b) {
+		return {ctor: 'Resize', _0: a, _1: b};
 	});
 var _user$project$Main$Restart = {ctor: 'Restart'};
 var _user$project$Main$view = function (model) {
-	var _p5 = model.dead;
-	if (_p5 === true) {
+	var _p7 = model.dead;
+	if (_p7 === true) {
 		return A2(
 			_elm_lang$html$Html$div,
 			{ctor: '[]'},
@@ -9291,72 +9430,46 @@ var _user$project$Main$view = function (model) {
 			{
 				ctor: '::',
 				_0: A2(
-					_elm_lang$html$Html$div,
+					_elm_lang$svg$Svg$svg,
 					{
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$style('float: left'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$svg$Svg_Attributes$version('1.1'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$baseProfile('full'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$width('100vw'),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$height('calc(100vh - 4px)'),
+									_1: {
+										ctor: '::',
+										_0: _elm_lang$svg$Svg_Attributes$viewBox(
+											_user$project$Main$getViewBox(model.grid)),
+										_1: {
+											ctor: '::',
+											_0: _elm_lang$svg$Svg_Attributes$preserveAspectRatio('none'),
+											_1: {ctor: '[]'}
+										}
+									}
+								}
+							}
+						}
 					},
 					{
 						ctor: '::',
 						_0: A2(
-							_elm_lang$svg$Svg$svg,
+							_elm_lang$svg$Svg$g,
 							{
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$version('1.1'),
-								_1: {
-									ctor: '::',
-									_0: _elm_lang$svg$Svg_Attributes$baseProfile('full'),
-									_1: {
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$width('800'),
-										_1: {
-											ctor: '::',
-											_0: _elm_lang$svg$Svg_Attributes$height('800'),
-											_1: {
-												ctor: '::',
-												_0: _elm_lang$svg$Svg_Attributes$viewBox('0 0 100 100'),
-												_1: {
-													ctor: '::',
-													_0: _elm_lang$svg$Svg_Attributes$style('border: black 4px solid'),
-													_1: {ctor: '[]'}
-												}
-											}
-										}
-									}
-								}
-							},
-							{
-								ctor: '::',
-								_0: A2(
-									_elm_lang$svg$Svg$g,
-									{
-										ctor: '::',
-										_0: _elm_lang$svg$Svg_Attributes$transform('matrix(1,0,0,-1,0,100)'),
-										_1: {ctor: '[]'}
-									},
-									A2(_elm_lang$core$List$map, _user$project$Main$block, model.body)),
+								_0: _elm_lang$svg$Svg_Attributes$transform('matrix(1,0,0,-1,0,100)'),
 								_1: {ctor: '[]'}
-							}),
+							},
+							A2(_elm_lang$core$List$map, _user$project$Main$block, model.body)),
 						_1: {ctor: '[]'}
 					}),
-				_1: {
-					ctor: '::',
-					_0: A2(
-						_elm_lang$html$Html$div,
-						{
-							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$style('float: right'),
-							_1: {ctor: '[]'}
-						},
-						{
-							ctor: '::',
-							_0: _elm_lang$html$Html$text(
-								_elm_lang$core$Basics$toString(model)),
-							_1: {ctor: '[]'}
-						}),
-					_1: {ctor: '[]'}
-				}
+				_1: {ctor: '[]'}
 			});
 	}
 };
@@ -9367,8 +9480,8 @@ var _user$project$Main$KeyCode = function (a) {
 	return {ctor: 'KeyCode', _0: a};
 };
 var _user$project$Main$subscriptions = function (model) {
-	var _p6 = model.dead;
-	if (_p6 === true) {
+	var _p8 = model.dead;
+	if (_p8 === true) {
 		return _elm_lang$core$Platform_Sub$none;
 	} else {
 		return _elm_lang$core$Platform_Sub$batch(
@@ -9378,7 +9491,15 @@ var _user$project$Main$subscriptions = function (model) {
 				_1: {
 					ctor: '::',
 					_0: _elm_lang$animation_frame$AnimationFrame$times(_user$project$Main$Tick),
-					_1: {ctor: '[]'}
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$window$Window$resizes(
+							function (_p9) {
+								var _p10 = _p9;
+								return A2(_user$project$Main$Resize, _p10.height, _p10.width);
+							}),
+						_1: {ctor: '[]'}
+					}
 				}
 			});
 	}
@@ -9389,7 +9510,7 @@ var _user$project$Main$Right = {ctor: 'Right'};
 var _user$project$Main$Up = {ctor: 'Up'};
 var _user$project$Main$init = {
 	ctor: '_Tuple2',
-	_0: A3(
+	_0: A4(
 		_user$project$Main$Model,
 		_user$project$Main$Up,
 		A2(
@@ -9398,12 +9519,19 @@ var _user$project$Main$init = {
 				return A2(_user$project$Main$Position, 50 - i, 50);
 			},
 			A2(_elm_lang$core$List$range, 0, 29)),
-		false),
-	_1: _elm_lang$core$Platform_Cmd$none
+		false,
+		A2(_user$project$Main$Grid, 0, 0)),
+	_1: A2(
+		_elm_lang$core$Task$perform,
+		function (_p11) {
+			var _p12 = _p11;
+			return A2(_user$project$Main$Resize, _p12.height, _p12.width);
+		},
+		_elm_lang$window$Window$size)
 };
 var _user$project$Main$toDirection = function (k) {
-	var _p7 = k;
-	switch (_p7) {
+	var _p13 = k;
+	switch (_p13) {
 		case 37:
 			return _elm_lang$core$Maybe$Just(_user$project$Main$Left);
 		case 38:
@@ -9422,8 +9550,8 @@ var _user$project$Main$isPerpendicular = F2(
 			return false;
 		} else {
 			var collapse = function (d) {
-				var _p8 = d;
-				switch (_p8.ctor) {
+				var _p14 = d;
+				switch (_p14.ctor) {
 					case 'Down':
 						return _user$project$Main$Up;
 					case 'Left':
@@ -9439,37 +9567,50 @@ var _user$project$Main$isPerpendicular = F2(
 	});
 var _user$project$Main$update = F2(
 	function (msg, model) {
-		var _p9 = msg;
-		switch (_p9.ctor) {
+		var _p15 = msg;
+		switch (_p15.ctor) {
 			case 'Tick':
 				return {
 					ctor: '_Tuple2',
-					_0: A3(
-						_user$project$Main$Model,
-						model.attitude,
-						A2(_user$project$Main$updateBody, model.attitude, model.body),
-						_user$project$Main$isDead(model)),
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							body: A2(_user$project$Main$updateBody, model.attitude, model.body),
+							dead: _user$project$Main$isDead(model)
+						}),
 					_1: _elm_lang$core$Platform_Cmd$none
 				};
 			case 'KeyCode':
-				var dir = _user$project$Main$toDirection(_p9._0);
-				var _p10 = dir;
-				if (_p10.ctor === 'Nothing') {
+				var dir = _user$project$Main$toDirection(_p15._0);
+				var _p16 = dir;
+				if (_p16.ctor === 'Nothing') {
 					return {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				} else {
-					var _p11 = _p10._0;
-					return A2(_user$project$Main$isPerpendicular, _p11, model.attitude) ? {
+					var _p17 = _p16._0;
+					return A2(_user$project$Main$isPerpendicular, _p17, model.attitude) ? {
 						ctor: '_Tuple2',
-						_0: A3(
-							_user$project$Main$Model,
-							_p11,
-							A2(_user$project$Main$updateBody, _p11, model.body),
-							_user$project$Main$isDead(model)),
+						_0: _elm_lang$core$Native_Utils.update(
+							model,
+							{
+								attitude: _p17,
+								body: A2(_user$project$Main$updateBody, _p17, model.body),
+								dead: _user$project$Main$isDead(model)
+							}),
 						_1: _elm_lang$core$Platform_Cmd$none
 					} : {ctor: '_Tuple2', _0: model, _1: _elm_lang$core$Platform_Cmd$none};
 				}
-			default:
+			case 'Restart':
 				return _user$project$Main$init;
+			default:
+				return {
+					ctor: '_Tuple2',
+					_0: _elm_lang$core$Native_Utils.update(
+						model,
+						{
+							grid: A2(_user$project$Main$Grid, ((_p15._1 * 100) / _p15._0) | 0, 100)
+						}),
+					_1: _elm_lang$core$Platform_Cmd$none
+				};
 		}
 	});
 var _user$project$Main$main = _elm_lang$html$Html$program(
