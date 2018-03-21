@@ -2,6 +2,7 @@ module Update exposing (..)
 
 import Keyboard
 import Time
+import Random
 
 import Msg exposing (..)
 import Model exposing (..)
@@ -40,17 +41,23 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     Tick dt ->
-      (
-        { model |
-          snake =
-            let
-              new_head = nextHead model.attitude (Snake.head model.snake) model.speed dt
-            in
-              Snake.cons new_head model.snake
-          , dead = isDead model
-        }
-        , Cmd.none
-      )
+      let
+        new_model =
+        case nearFood model of
+          False ->
+            { model |
+              snake = updateSnake model dt
+              , dead = isDead model
+            }
+          True ->
+            { model |
+              food = Nothing
+              ,snake = Snake.grow Init.growth (updateSnake model dt)
+              ,speed = model.speed + Init.accel
+              , dead = isDead model
+            }
+      in
+        (new_model, Cmd.none)
     KeyCode k ->
       let
         dir = toDirection k
@@ -62,6 +69,18 @@ update msg model =
             else (model, Cmd.none)
     Restart -> init
     Resize h w -> ( { model | grid = Grid (w*100 // h) 100 }, Cmd.none )
+    FoodTime _ -> (model, Random.generate Food <| foodGenerator model.grid)
+    Food f -> ( { model | food = Just f}, Cmd.none )
+
+updateSnake : Model -> Time.Time -> Snake
+updateSnake model dt =
+  let
+    new_head = nextHead model.attitude (Snake.head model.snake) model.speed dt
+  in
+    Snake.cons new_head model.snake
+
+foodGenerator : Grid -> Random.Generator Point
+foodGenerator {width, height} = Random.pair (Random.float 0 <| toFloat width) (Random.float 0 <| toFloat height)
 
 nextHead : Direction -> Maybe Point -> Float -> Time.Time -> Point
 nextHead d mHead speed dt =
@@ -98,5 +117,8 @@ insideGrid grid (x,y) =
   && (0 < y)
   && (y < toFloat grid.height)
 
--- isHeadOnTail : Position -> List Position -> Bool
--- isHeadOnTail h t = not <| List.isEmpty <| List.filter ((==) h) t
+nearFood: Model -> Bool
+nearFood model =
+  case (Snake.head model.snake, model.food) of
+    (Just h, Just f) -> Snake.withInTol 1 <| Snake.distance h f
+    (_, _) -> False

@@ -1,14 +1,9 @@
 module Model exposing (..)
 
 import Snake exposing (Snake, Point)
+import Random
 
 -- MODEL
-type alias Position =
-  {
-    x: Int,
-    y: Int
-  }
-
 type alias Grid =
   {
     width: Int,
@@ -21,6 +16,7 @@ type alias Model = {
   ,attitude: Direction
   ,dead: Bool
   ,grid: Grid
+  ,food: Maybe Point
 }
 
 type Direction =

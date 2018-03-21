@@ -1,4 +1,4 @@
-module Snake exposing ( Snake, Point, coords, cons, head, isHeadOnTail )
+module Snake exposing ( Snake, Point, coords, cons, head, isHeadOnTail, distance, withInTol, grow)
 
 import Nonempty exposing (..)
 
@@ -70,10 +70,15 @@ epsilon = 10^(-5)
 
 is_between : Point -> Point -> Point -> Bool
 is_between a c b = 
-  let zero = (distance a c) + (distance c b) - (distance a b)
-  in
-    -epsilon < zero && zero < epsilon
+  withInTol epsilon <| (distance a c) + (distance c b) - (distance a b)
 
 isHeadOnTail : Snake -> Bool
 isHeadOnTail snake =
   False
+
+withInTol : Float -> Float -> Bool
+withInTol tol zero =
+    -tol < zero && zero < tol
+
+grow : Float -> Snake -> Snake
+grow x snake = { snake | length = snake.length + x }

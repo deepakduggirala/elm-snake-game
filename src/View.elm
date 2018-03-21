@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Html exposing (text, div, h2, br, button)
-import Svg exposing (svg, rect, g)
+import Svg exposing (svg, rect, g, circle)
 import Svg.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
@@ -22,13 +22,24 @@ view model =
         [
           svg [ version "1.1", baseProfile "full", width "100vw", height "calc(100vh - 4px)", viewBox (getViewBox model.grid), preserveAspectRatio "none"]
             [
-              g [ transform "matrix(1,0,0,-1,0,100)" ] (List.map block <| discreteSnake 1 model.snake )
+              g [ transform "matrix(1,0,0,-1,0,100)" ] 
+              -- (
+              --   List.append (foodBlock model.food)
+              --   (List.map block <| discreteSnake 1 model.snake)
+              -- )
+              (case model.food of
+                Nothing -> List.map block <| discreteSnake 1 model.snake
+                Just p -> (foodBlock p) :: (List.map block <| discreteSnake 1 model.snake))
             ]
         ]
 
 block : Point -> Html.Html Msg
 block (px,py) =
   rect [ x <| toString px, y <| toString py, width "1", height "1", fill "black"] []
+
+foodBlock : Point -> Html.Html Msg
+foodBlock (px, py) =
+  circle [cx <| toString px, cy <| toString py, r "1", fill "red"] []   
 
 discreteSnake : Float -> Snake -> List Point
 discreteSnake res snake =
