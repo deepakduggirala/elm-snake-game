@@ -1,9 +1,6 @@
 module Model exposing (..)
 
-import Task exposing (Task)
-import Msg exposing (..)
-
-import Window
+import Snake exposing (Snake, Point)
 
 -- MODEL
 type alias Position =
@@ -19,10 +16,11 @@ type alias Grid =
   }
 
 type alias Model = {
-  attitude: Direction,
-  body: List Position,
-  dead: Bool,
-  grid: Grid
+  snake: Snake
+  ,speed: Float
+  ,attitude: Direction
+  ,dead: Bool
+  ,grid: Grid
 }
 
 type Direction =
@@ -30,7 +28,3 @@ type Direction =
   | Right
   | Down
   | Left
-
-
-init : ( Model, Cmd Msg )
-init =  ( Model Up (List.map (\i -> (Position (50-i) 50)) (List.range 0 29) ) False (Grid 0 0), Task.perform (\{width, height} -> Resize height width) Window.size )

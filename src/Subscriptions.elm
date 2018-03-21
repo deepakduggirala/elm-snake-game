@@ -14,6 +14,6 @@ subscriptions model =
     False ->
       Sub.batch [
         Keyboard.downs KeyCode
-        , AnimationFrame.times Tick
+        , AnimationFrame.diffs Tick
         , Window.resizes (\{height, width} -> Resize height width)
       ]
