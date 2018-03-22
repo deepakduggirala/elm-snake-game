@@ -9681,44 +9681,57 @@ var _user$project$Nonempty$fromList = F2(
 				A2(_user$project$Nonempty$fromList, _p1._0, _p1._1));
 		}
 	});
-var _user$project$Snake$grow = F2(
-	function (x, snake) {
-		return _elm_lang$core$Native_Utils.update(
-			snake,
-			{length: snake.length + x});
-	});
-var _user$project$Snake$withInTol = F2(
-	function (tol, zero) {
-		return (_elm_lang$core$Native_Utils.cmp(0 - tol, zero) < 0) && (_elm_lang$core$Native_Utils.cmp(zero, tol) < 0);
-	});
-var _user$project$Snake$isHeadOnTail = function (snake) {
-	return false;
-};
-var _user$project$Snake$epsilon = Math.pow(10, -5);
-var _user$project$Snake$distance = F2(
+var _user$project$Math$epsilon = Math.pow(10, -5);
+var _user$project$Math$distance = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
 		var _p3 = _p0;
 		return _elm_lang$core$Basics$sqrt(
 			Math.pow(_p3._0 - _p2._0, 2) + Math.pow(_p3._1 - _p2._1, 2));
 	});
-var _user$project$Snake$is_between = F3(
+var _user$project$Math$interpolate = F3(
+	function (a, b, n) {
+		var _p4 = b;
+		var xb = _p4._0;
+		var yb = _p4._1;
+		var _p5 = a;
+		var xa = _p5._0;
+		var ya = _p5._1;
+		var d = A2(_user$project$Math$distance, a, b);
+		var l = n / d;
+		var m = 1 - l;
+		return {ctor: '_Tuple2', _0: (xa * m) + (xb * l), _1: (ya * m) + (yb * l)};
+	});
+var _user$project$Math$withInTol = F2(
+	function (tol, zero) {
+		return (_elm_lang$core$Native_Utils.cmp(0 - tol, zero) < 0) && (_elm_lang$core$Native_Utils.cmp(zero, tol) < 0);
+	});
+var _user$project$Math$is_between = F3(
 	function (a, c, b) {
 		return A2(
-			_user$project$Snake$withInTol,
-			_user$project$Snake$epsilon,
-			(A2(_user$project$Snake$distance, a, c) + A2(_user$project$Snake$distance, c, b)) - A2(_user$project$Snake$distance, a, b));
+			_user$project$Math$withInTol,
+			_user$project$Math$epsilon,
+			(A2(_user$project$Math$distance, a, c) + A2(_user$project$Math$distance, c, b)) - A2(_user$project$Math$distance, a, b));
 	});
-var _user$project$Snake$lineDistance = F3(
+var _user$project$Math$lineDistance = F3(
 	function (data, start, p) {
-		var _p4 = data;
-		if (_p4.ctor === '[]') {
-			return A2(_user$project$Snake$distance, start, p);
+		var _p6 = data;
+		if (_p6.ctor === '[]') {
+			return A2(_user$project$Math$distance, start, p);
 		} else {
-			var _p5 = _p4._0;
-			return A3(_user$project$Snake$is_between, start, p, _p5) ? A2(_user$project$Snake$distance, start, p) : (A3(_user$project$Snake$lineDistance, _p4._1, _p5, p) + A2(_user$project$Snake$distance, start, _p5));
+			var _p7 = _p6._0;
+			return A3(_user$project$Math$is_between, start, p, _p7) ? A2(_user$project$Math$distance, start, p) : (A3(_user$project$Math$lineDistance, _p6._1, _p7, p) + A2(_user$project$Math$distance, start, _p7));
 		}
 	});
+var _user$project$Snake$grow = F2(
+	function (x, snake) {
+		return _elm_lang$core$Native_Utils.update(
+			snake,
+			{length: snake.length + x});
+	});
+var _user$project$Snake$isHeadOnTail = function (snake) {
+	return false;
+};
 var _user$project$Snake$cons = F2(
 	function (new_head, snake) {
 		return _elm_lang$core$Native_Utils.update(
@@ -9728,44 +9741,31 @@ var _user$project$Snake$cons = F2(
 					_elm_lang$core$List$filter,
 					function (pos) {
 						return _elm_lang$core$Native_Utils.cmp(
-							A3(_user$project$Snake$lineDistance, snake.body, new_head, pos),
+							A3(_user$project$Math$lineDistance, snake.body, new_head, pos),
 							snake.length) < 1;
 					},
 					{ctor: '::', _0: new_head, _1: snake.body})
 			});
 	});
-var _user$project$Snake$interpolate = F3(
-	function (a, b, n) {
-		var _p6 = b;
-		var xb = _p6._0;
-		var yb = _p6._1;
-		var _p7 = a;
-		var xa = _p7._0;
-		var ya = _p7._1;
-		var d = A2(_user$project$Snake$distance, a, b);
-		var l = n / d;
-		var m = 1 - l;
-		return {ctor: '_Tuple2', _0: (xa * m) + (xb * l), _1: (ya * m) + (yb * l)};
-	});
 var _user$project$Snake$pointAlongLine = F3(
 	function (data, start, l) {
 		pointAlongLine:
 		while (true) {
-			var _p8 = data;
-			if (_p8.ctor === 'Elem') {
-				return A3(_user$project$Snake$interpolate, start, _p8._0, l);
+			var _p0 = data;
+			if (_p0.ctor === 'Elem') {
+				return A3(_user$project$Math$interpolate, start, _p0._0, l);
 			} else {
-				var _p9 = _p8._0;
-				var d = A2(_user$project$Snake$distance, start, _p9);
+				var _p1 = _p0._0;
+				var d = A2(_user$project$Math$distance, start, _p1);
 				if (_elm_lang$core$Native_Utils.cmp(l, d) < 0) {
-					return A3(_user$project$Snake$interpolate, start, _p9, l);
+					return A3(_user$project$Math$interpolate, start, _p1, l);
 				} else {
-					var _v4 = _p8._1,
-						_v5 = _p9,
-						_v6 = l - d;
-					data = _v4;
-					start = _v5;
-					l = _v6;
+					var _v1 = _p0._1,
+						_v2 = _p1,
+						_v3 = l - d;
+					data = _v1;
+					start = _v2;
+					l = _v3;
 					continue pointAlongLine;
 				}
 			}
@@ -9773,18 +9773,18 @@ var _user$project$Snake$pointAlongLine = F3(
 	});
 var _user$project$Snake$coords = F2(
 	function (l, snake) {
-		var _p10 = snake.body;
-		if (_p10.ctor === '[]') {
+		var _p2 = snake.body;
+		if (_p2.ctor === '[]') {
 			return _elm_lang$core$Maybe$Nothing;
 		} else {
-			if (_p10._1.ctor === '[]') {
-				return _elm_lang$core$Maybe$Just(_p10._0);
+			if (_p2._1.ctor === '[]') {
+				return _elm_lang$core$Maybe$Just(_p2._0);
 			} else {
 				return _elm_lang$core$Maybe$Just(
 					A3(
 						_user$project$Snake$pointAlongLine,
-						A2(_user$project$Nonempty$fromList, _p10._1._0, _p10._1._1),
-						_p10._0,
+						A2(_user$project$Nonempty$fromList, _p2._1._0, _p2._1._1),
+						_p2._0,
 						l));
 			}
 		}
@@ -9832,8 +9832,10 @@ var _user$project$Init$leftof = F2(
 		var _p1 = _p0;
 		return {ctor: '_Tuple2', _0: _p1._0 - xd, _1: _p1._1};
 	});
+var _user$project$Init$blockWidth = 1;
 var _user$project$Init$growth = 3;
 var _user$project$Init$accel = 2.5e-3;
+var _user$project$Init$foodTol = 1;
 var _user$project$Init$foodInterval = 5;
 var _user$project$Init$len = 30;
 var _user$project$Init$start = {ctor: '_Tuple2', _0: 30, _1: 30};
@@ -9876,9 +9878,9 @@ var _user$project$Update$nearFood = function (model) {
 	};
 	if ((_p0._0.ctor === 'Just') && (_p0._1.ctor === 'Just')) {
 		return A2(
-			_user$project$Snake$withInTol,
-			1,
-			A2(_user$project$Snake$distance, _p0._0._0, _p0._1._0));
+			_user$project$Math$withInTol,
+			_user$project$Init$foodTol,
+			A2(_user$project$Math$distance, _p0._0._0, _p0._1._0));
 	} else {
 		return false;
 	}
@@ -10194,49 +10196,102 @@ var _user$project$View$discreteSnake = F2(
 				A2(_elm_lang$core$Basics$flip, _user$project$Snake$coords, snake),
 				A3(_user$project$View$range, 0, res, snake.length)));
 	});
-var _user$project$View$foodBlock = function (_p5) {
-	var _p6 = _p5;
-	return A2(
-		_elm_lang$svg$Svg$circle,
-		{
-			ctor: '::',
-			_0: _elm_lang$svg$Svg_Attributes$cx(
-				_elm_lang$core$Basics$toString(_p6._0)),
-			_1: {
+var _user$project$View$score = function (model) {
+	var _p5 = model.grid;
+	var width = _p5.width;
+	var height = _p5.height;
+	var s = _elm_lang$core$Basics$truncate(model.snake.length) * 10;
+	return {
+		ctor: '::',
+		_0: A2(
+			_elm_lang$svg$Svg$text_,
+			{
 				ctor: '::',
-				_0: _elm_lang$svg$Svg_Attributes$cy(
-					_elm_lang$core$Basics$toString(_p6._1)),
+				_0: _elm_lang$svg$Svg_Attributes$x(
+					_elm_lang$core$Basics$toString(width - 2)),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$r('1'),
+					_0: _elm_lang$svg$Svg_Attributes$y('4'),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$fill('red'),
-						_1: {ctor: '[]'}
+						_0: _elm_lang$svg$Svg_Attributes$textAnchor('end'),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$transform('matrix(1,0,0,-1,0,100)'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$style('font-family: Times New Roman; font-size: 4; stroke: #000; stroke-width: 0.1; fill: #fff;'),
+								_1: {ctor: '[]'}
+							}
+						}
 					}
 				}
-			}
-		},
-		{ctor: '[]'});
+			},
+			{
+				ctor: '::',
+				_0: _elm_lang$svg$Svg$text(
+					_elm_lang$core$Basics$toString(s)),
+				_1: {ctor: '[]'}
+			}),
+		_1: {ctor: '[]'}
+	};
+};
+var _user$project$View$foodBlock = function (mp) {
+	var _p6 = mp;
+	if (_p6.ctor === 'Nothing') {
+		return {ctor: '[]'};
+	} else {
+		return {
+			ctor: '::',
+			_0: A2(
+				_elm_lang$svg$Svg$circle,
+				{
+					ctor: '::',
+					_0: _elm_lang$svg$Svg_Attributes$cx(
+						_elm_lang$core$Basics$toString(_p6._0._0)),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$svg$Svg_Attributes$cy(
+							_elm_lang$core$Basics$toString(_p6._0._1)),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$svg$Svg_Attributes$r('1'),
+							_1: {
+								ctor: '::',
+								_0: _elm_lang$svg$Svg_Attributes$fill('red'),
+								_1: {ctor: '[]'}
+							}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {ctor: '[]'}
+		};
+	}
 };
 var _user$project$View$block = function (_p7) {
 	var _p8 = _p7;
+	var s = _user$project$Init$blockWidth;
+	var px = _p8._0 - (s / 2);
+	var py = _p8._1 - (s / 2);
 	return A2(
 		_elm_lang$svg$Svg$rect,
 		{
 			ctor: '::',
 			_0: _elm_lang$svg$Svg_Attributes$x(
-				_elm_lang$core$Basics$toString(_p8._0)),
+				_elm_lang$core$Basics$toString(px)),
 			_1: {
 				ctor: '::',
 				_0: _elm_lang$svg$Svg_Attributes$y(
-					_elm_lang$core$Basics$toString(_p8._1)),
+					_elm_lang$core$Basics$toString(py)),
 				_1: {
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$width('1'),
+					_0: _elm_lang$svg$Svg_Attributes$width(
+						_elm_lang$core$Basics$toString(s)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$height('1'),
+						_0: _elm_lang$svg$Svg_Attributes$height(
+							_elm_lang$core$Basics$toString(s)),
 						_1: {
 							ctor: '::',
 							_0: _elm_lang$svg$Svg_Attributes$fill('black'),
@@ -10324,24 +10379,23 @@ var _user$project$View$view = function (model) {
 								_0: _elm_lang$svg$Svg_Attributes$transform('matrix(1,0,0,-1,0,100)'),
 								_1: {ctor: '[]'}
 							},
-							function () {
-								var _p10 = model.food;
-								if (_p10.ctor === 'Nothing') {
-									return A2(
+							_elm_lang$core$List$concat(
+								{
+									ctor: '::',
+									_0: A2(
 										_elm_lang$core$List$map,
 										_user$project$View$block,
-										A2(_user$project$View$discreteSnake, 1, model.snake));
-								} else {
-									return {
+										A2(_user$project$View$discreteSnake, 1, model.snake)),
+									_1: {
 										ctor: '::',
-										_0: _user$project$View$foodBlock(_p10._0),
-										_1: A2(
-											_elm_lang$core$List$map,
-											_user$project$View$block,
-											A2(_user$project$View$discreteSnake, 1, model.snake))
-									};
-								}
-							}()),
+										_0: _user$project$View$foodBlock(model.food),
+										_1: {
+											ctor: '::',
+											_0: _user$project$View$score(model),
+											_1: {ctor: '[]'}
+										}
+									}
+								})),
 						_1: {ctor: '[]'}
 					}),
 				_1: {ctor: '[]'}

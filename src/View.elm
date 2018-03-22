@@ -23,14 +23,18 @@ view model =
         [
           svg [ version "1.1", baseProfile "full", width "100vw", height "calc(100vh - 4px)", viewBox (getViewBox model.grid), preserveAspectRatio "none"]
             [
-              g [ transform "matrix(1,0,0,-1,0,100)" ] 
-              (case model.food of
-                Nothing -> List.map block <| discreteSnake 1 model.snake
-                Just p -> (foodBlock p) :: (List.map block <| discreteSnake 1 model.snake))
+              g [ transform "matrix(1,0,0,-1,0,100)" ]
+                (List.concat
+                  [
+                    List.map block <| discreteSnake 1 model.snake
+                    ,foodBlock model.food
+                    ,score model
+                  ]
+                )
             ]
         ]
 
-block : Point -> Html.Html Msg
+block : Point -> Svg.Svg Msg
 block (cx,cy) =
   let
     s = Init.blockWidth
@@ -39,9 +43,23 @@ block (cx,cy) =
   in
     rect [ x <| toString px, y <| toString py, width <| toString s, height <| toString s, fill "black"] []
 
-foodBlock : Point -> Html.Html Msg
-foodBlock (px, py) =
-  circle [cx <| toString px, cy <| toString py, r "1", fill "red"] []   
+foodBlock : Maybe Point -> List (Svg.Svg Msg)
+foodBlock mp =
+  case mp of
+    Nothing -> []
+    Just (px, py) ->
+      [ circle [cx <| toString px, cy <| toString py, r "1", fill "red"] [] ]
+
+score : Model -> List (Svg.Svg Msg)
+score model =
+  let
+    s = (truncate model.snake.length)*10
+    {width, height} = model.grid
+  in
+    [ Svg.text_
+      [x <| toString (width-2), y "4", textAnchor "end", transform "matrix(1,0,0,-1,0,100)", style "font-family: Times New Roman; font-size: 4; stroke: #000; stroke-width: 0.1; fill: #fff;"]
+      [ Svg.text <| toString s]
+    ]
 
 discreteSnake : Float -> Snake -> List Point
 discreteSnake res snake =
