@@ -39,3 +39,7 @@ interpolate a b n =
        xa * m + xb*l
       ,ya * m + yb*l
     )
+
+slope : Point -> Point -> Float
+slope (x1, y1) (x2, y2) =
+  (y2-y1)/(x2-x1)

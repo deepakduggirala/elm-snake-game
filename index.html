@@ -9681,22 +9681,28 @@ var _user$project$Nonempty$fromList = F2(
 				A2(_user$project$Nonempty$fromList, _p1._0, _p1._1));
 		}
 	});
-var _user$project$Math$epsilon = Math.pow(10, -5);
-var _user$project$Math$distance = F2(
+var _user$project$Math$slope = F2(
 	function (_p1, _p0) {
 		var _p2 = _p1;
 		var _p3 = _p0;
+		return (_p3._1 - _p2._1) / (_p3._0 - _p2._0);
+	});
+var _user$project$Math$epsilon = Math.pow(10, -5);
+var _user$project$Math$distance = F2(
+	function (_p5, _p4) {
+		var _p6 = _p5;
+		var _p7 = _p4;
 		return _elm_lang$core$Basics$sqrt(
-			Math.pow(_p3._0 - _p2._0, 2) + Math.pow(_p3._1 - _p2._1, 2));
+			Math.pow(_p7._0 - _p6._0, 2) + Math.pow(_p7._1 - _p6._1, 2));
 	});
 var _user$project$Math$interpolate = F3(
 	function (a, b, n) {
-		var _p4 = b;
-		var xb = _p4._0;
-		var yb = _p4._1;
-		var _p5 = a;
-		var xa = _p5._0;
-		var ya = _p5._1;
+		var _p8 = b;
+		var xb = _p8._0;
+		var yb = _p8._1;
+		var _p9 = a;
+		var xa = _p9._0;
+		var ya = _p9._1;
 		var d = A2(_user$project$Math$distance, a, b);
 		var l = n / d;
 		var m = 1 - l;
@@ -9715,14 +9721,26 @@ var _user$project$Math$is_between = F3(
 	});
 var _user$project$Math$lineDistance = F3(
 	function (data, start, p) {
-		var _p6 = data;
-		if (_p6.ctor === '[]') {
+		var _p10 = data;
+		if (_p10.ctor === '[]') {
 			return A2(_user$project$Math$distance, start, p);
 		} else {
-			var _p7 = _p6._0;
-			return A3(_user$project$Math$is_between, start, p, _p7) ? A2(_user$project$Math$distance, start, p) : (A3(_user$project$Math$lineDistance, _p6._1, _p7, p) + A2(_user$project$Math$distance, start, _p7));
+			var _p11 = _p10._0;
+			return A3(_user$project$Math$is_between, start, p, _p11) ? A2(_user$project$Math$distance, start, p) : (A3(_user$project$Math$lineDistance, _p10._1, _p11, p) + A2(_user$project$Math$distance, start, _p11));
 		}
 	});
+var _user$project$Snake$maybe2list = function (ma) {
+	var _p0 = ma;
+	if (_p0.ctor === 'Nothing') {
+		return {ctor: '[]'};
+	} else {
+		return {
+			ctor: '::',
+			_0: _p0._0,
+			_1: {ctor: '[]'}
+		};
+	}
+};
 var _user$project$Snake$grow = F2(
 	function (x, snake) {
 		return _elm_lang$core$Native_Utils.update(
@@ -9732,40 +9750,113 @@ var _user$project$Snake$grow = F2(
 var _user$project$Snake$isHeadOnTail = function (snake) {
 	return false;
 };
-var _user$project$Snake$cons = F2(
-	function (new_head, snake) {
-		return _elm_lang$core$Native_Utils.update(
-			snake,
-			{
-				body: A2(
-					_elm_lang$core$List$filter,
-					function (pos) {
-						return _elm_lang$core$Native_Utils.cmp(
-							A3(_user$project$Math$lineDistance, snake.body, new_head, pos),
-							snake.length) < 1;
-					},
-					{ctor: '::', _0: new_head, _1: snake.body})
-			});
+var _user$project$Snake$sameSlopeAs = F3(
+	function (p1, p2, p3) {
+		return _elm_lang$core$Native_Utils.eq(
+			A2(_user$project$Math$slope, p1, p2),
+			A2(_user$project$Math$slope, p1, p3));
 	});
+var _user$project$Snake$lastMatch = F2(
+	function (pred, xs) {
+		var _p1 = xs;
+		if (_p1.ctor === '[]') {
+			return {
+				ctor: '_Tuple2',
+				_0: _elm_lang$core$Maybe$Nothing,
+				_1: {ctor: '[]'}
+			};
+		} else {
+			var _p5 = _p1._1;
+			var _p4 = _p1._0;
+			if (pred(_p4)) {
+				var _p2 = A2(_user$project$Snake$lastMatch, pred, _p5);
+				if (_p2._0.ctor === 'Nothing') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Maybe$Just(_p4),
+						_1: _p5
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Maybe$Just(_p2._0._0),
+						_1: _p2._1
+					};
+				}
+			} else {
+				var _p3 = A2(_user$project$Snake$lastMatch, pred, _p5);
+				if (_p3._0.ctor === 'Nothing') {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Maybe$Nothing,
+						_1: {ctor: '::', _0: _p4, _1: _p3._1}
+					};
+				} else {
+					return {
+						ctor: '_Tuple2',
+						_0: _elm_lang$core$Maybe$Just(_p3._0._0),
+						_1: _p3._1
+					};
+				}
+			}
+		}
+	});
+var _user$project$Snake$compress = function (points) {
+	var _p6 = points;
+	if (_p6.ctor === '[]') {
+		return {ctor: '[]'};
+	} else {
+		var _p10 = _p6._0;
+		var _p7 = _p6._1;
+		if (_p7.ctor === '[]') {
+			return {
+				ctor: '::',
+				_0: _p10,
+				_1: {ctor: '[]'}
+			};
+		} else {
+			var _p9 = _p7._0;
+			var _p8 = A2(
+				_user$project$Snake$lastMatch,
+				A2(_user$project$Snake$sameSlopeAs, _p10, _p9),
+				_p7._1);
+			if (_p8._0.ctor === 'Nothing') {
+				return {
+					ctor: '::',
+					_0: _p10,
+					_1: _user$project$Snake$compress(
+						{ctor: '::', _0: _p9, _1: _p8._1})
+				};
+			} else {
+				return {
+					ctor: '::',
+					_0: _p10,
+					_1: _user$project$Snake$compress(
+						{ctor: '::', _0: _p8._0._0, _1: _p8._1})
+				};
+			}
+		}
+	}
+};
 var _user$project$Snake$pointAlongLine = F3(
 	function (data, start, l) {
 		pointAlongLine:
 		while (true) {
-			var _p0 = data;
-			if (_p0.ctor === 'Elem') {
-				return A3(_user$project$Math$interpolate, start, _p0._0, l);
+			var _p11 = data;
+			if (_p11.ctor === 'Elem') {
+				return A3(_user$project$Math$interpolate, start, _p11._0, l);
 			} else {
-				var _p1 = _p0._0;
-				var d = A2(_user$project$Math$distance, start, _p1);
+				var _p12 = _p11._0;
+				var d = A2(_user$project$Math$distance, start, _p12);
 				if (_elm_lang$core$Native_Utils.cmp(l, d) < 0) {
-					return A3(_user$project$Math$interpolate, start, _p1, l);
+					return A3(_user$project$Math$interpolate, start, _p12, l);
 				} else {
-					var _v1 = _p0._1,
-						_v2 = _p1,
-						_v3 = l - d;
-					data = _v1;
-					start = _v2;
-					l = _v3;
+					var _v8 = _p11._1,
+						_v9 = _p12,
+						_v10 = l - d;
+					data = _v8;
+					start = _v9;
+					l = _v10;
 					continue pointAlongLine;
 				}
 			}
@@ -9773,21 +9864,56 @@ var _user$project$Snake$pointAlongLine = F3(
 	});
 var _user$project$Snake$coords = F2(
 	function (l, snake) {
-		var _p2 = snake.body;
-		if (_p2.ctor === '[]') {
+		var _p13 = snake.body;
+		if (_p13.ctor === '[]') {
 			return _elm_lang$core$Maybe$Nothing;
 		} else {
-			if (_p2._1.ctor === '[]') {
-				return _elm_lang$core$Maybe$Just(_p2._0);
+			if (_p13._1.ctor === '[]') {
+				return _elm_lang$core$Maybe$Just(_p13._0);
 			} else {
 				return _elm_lang$core$Maybe$Just(
 					A3(
 						_user$project$Snake$pointAlongLine,
-						A2(_user$project$Nonempty$fromList, _p2._1._0, _p2._1._1),
-						_p2._0,
+						A2(_user$project$Nonempty$fromList, _p13._1._0, _p13._1._1),
+						_p13._0,
 						l));
 			}
 		}
+	});
+var _user$project$Snake$prune = function (snake) {
+	return _elm_lang$core$Native_Utils.update(
+		snake,
+		{
+			body: function () {
+				var _p14 = snake.body;
+				if (_p14.ctor === '[]') {
+					return {ctor: '[]'};
+				} else {
+					return _user$project$Snake$compress(
+						A2(
+							_elm_lang$core$List$append,
+							A2(
+								_elm_lang$core$List$filter,
+								function (p) {
+									return _elm_lang$core$Native_Utils.cmp(
+										A3(_user$project$Math$lineDistance, _p14._1, _p14._0, p),
+										snake.length) < 1;
+								},
+								snake.body),
+							_user$project$Snake$maybe2list(
+								A2(_user$project$Snake$coords, snake.length, snake))));
+				}
+			}()
+		});
+};
+var _user$project$Snake$cons = F2(
+	function (new_head, snake) {
+		return _user$project$Snake$prune(
+			_elm_lang$core$Native_Utils.update(
+				snake,
+				{
+					body: {ctor: '::', _0: new_head, _1: snake.body}
+				}));
 	});
 var _user$project$Snake$head = _user$project$Snake$coords(0);
 var _user$project$Snake$Snake = F2(
