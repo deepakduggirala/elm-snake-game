@@ -20,7 +20,7 @@ distance : Point -> Point -> Float
 distance (x1, y1) (x2, y2) = sqrt <| (x2-x1) ^ 2 + (y2-y1) ^ 2
 
 epsilon : Float
-epsilon = 10^(-5)
+epsilon = 10^(-3)
 
 is_between : Point -> Point -> Point -> Bool
 is_between a c b = 

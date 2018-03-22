@@ -1,4 +1,4 @@
-module Snake exposing ( Snake, Point, coords, cons, head, isHeadOnTail, grow)
+module Snake exposing ( Snake, Point, coords, cons, head, isHeadOnTail, grow, adjacentList)
 
 import Nonempty exposing (..)
 import Math exposing (..)
