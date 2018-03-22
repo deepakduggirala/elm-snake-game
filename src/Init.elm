@@ -20,11 +20,17 @@ len = 30 -- grid units
 foodInterval: Float
 foodInterval = 5 -- seconds
 
+foodTol: Float
+foodTol = 1
+
 accel : Float
 accel = 0.0025 -- speed per food
 
 growth : Float
 growth = 3
+
+blockWidth: Float
+blockWidth = 1
 
 initSnake : Snake
 initSnake = Snake [start, leftof start 1] len

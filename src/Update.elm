@@ -8,6 +8,7 @@ import Msg exposing (..)
 import Model exposing (..)
 import Snake exposing (Snake, Point)
 import Init exposing (..)
+import Math
 
 toDirection : Keyboard.KeyCode -> Maybe Direction
 toDirection k =
@@ -120,5 +121,5 @@ insideGrid grid (x,y) =
 nearFood: Model -> Bool
 nearFood model =
   case (Snake.head model.snake, model.food) of
-    (Just h, Just f) -> Snake.withInTol 1 <| Snake.distance h f
+    (Just h, Just f) -> Math.withInTol Init.foodTol <| Math.distance h f
     (_, _) -> False

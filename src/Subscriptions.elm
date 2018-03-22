@@ -8,7 +8,6 @@ import Keyboard
 import AnimationFrame
 import Window
 import Time exposing (Time)
-import Random
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -21,10 +20,3 @@ subscriptions model =
         , Window.resizes (\{height, width} -> Resize height width)
         , Time.every (Init.foodInterval*Time.second) FoodTime
       ]
-
--- foo : Time -> Msg
--- foo t =
---   let
---     foodGen = Random.pair Random.float Random.float
---   in
---     Random.generate Food foodGen

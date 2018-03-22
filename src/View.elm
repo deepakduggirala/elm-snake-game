@@ -8,6 +8,7 @@ import Html.Events exposing (onClick)
 import Msg exposing (..)
 import Model exposing (..)
 import Snake exposing (Snake, Point)
+import Init
 
 view : Model -> Html.Html Msg
 view model =
@@ -23,10 +24,6 @@ view model =
           svg [ version "1.1", baseProfile "full", width "100vw", height "calc(100vh - 4px)", viewBox (getViewBox model.grid), preserveAspectRatio "none"]
             [
               g [ transform "matrix(1,0,0,-1,0,100)" ] 
-              -- (
-              --   List.append (foodBlock model.food)
-              --   (List.map block <| discreteSnake 1 model.snake)
-              -- )
               (case model.food of
                 Nothing -> List.map block <| discreteSnake 1 model.snake
                 Just p -> (foodBlock p) :: (List.map block <| discreteSnake 1 model.snake))
@@ -34,8 +31,13 @@ view model =
         ]
 
 block : Point -> Html.Html Msg
-block (px,py) =
-  rect [ x <| toString px, y <| toString py, width "1", height "1", fill "black"] []
+block (cx,cy) =
+  let
+    s = Init.blockWidth
+    px = cx - s/2
+    py = cy - s/2
+  in
+    rect [ x <| toString px, y <| toString py, width <| toString s, height <| toString s, fill "black"] []
 
 foodBlock : Point -> Html.Html Msg
 foodBlock (px, py) =
