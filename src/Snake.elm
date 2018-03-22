@@ -85,7 +85,16 @@ sameSlopeAs p1 p2 p3 =
 
 isHeadOnTail : Snake -> Bool
 isHeadOnTail snake =
-  False
+  case snake.body of
+    [] -> True
+    h::t ->
+      case t of
+        [] -> False
+        h2::t2 ->
+          case t2 of
+            [] -> False
+            h3::t3 ->
+              List.foldr (||) False (List.map (\(p1,p2) -> is_between p1 h p2) (adjacentList t))
 
 grow : Float -> Snake -> Snake
 grow x snake = { snake | length = snake.length + x }
@@ -95,3 +104,12 @@ maybe2list ma =
   case ma of
     Nothing -> []
     Just a -> [a]
+
+adjacentList : List a -> List (a,a)
+adjacentList l =
+  case l of
+    [] -> []
+    h::t ->
+      case t of
+        [] -> []
+        h2::t2 -> (h,h2) :: (adjacentList (h2::t2))

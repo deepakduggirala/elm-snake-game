@@ -33,7 +33,7 @@ blockWidth: Float
 blockWidth = 1
 
 initSnake : Snake
-initSnake = Snake [start, leftof start 1] len
+initSnake = Snake.cons (leftof start 1) (Snake [start] len)
 
 leftof : Point -> Float -> Point
 leftof (x,y) xd = (x-xd,y)
