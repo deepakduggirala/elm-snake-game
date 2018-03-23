@@ -48,7 +48,7 @@ foodBlock mp =
   case mp of
     Nothing -> []
     Just (px, py) ->
-      [ image [x <| toString px, y <| toString py, width <| toString Init.foodRadius, height <| toString Init.foodRadius, xlinkHref "/rat.svg"] [] ]
+      [ image [x <| toString px, y <| toString py, width <| toString Init.foodRadius, height <| toString Init.foodRadius, xlinkHref "rat.svg"] [] ]
       -- [ circle [cx <| toString px, cy <| toString py, r <| toString Init.foodRadius, fill "red"] [] ]
 
 score : Model -> List (Svg.Svg Msg)
