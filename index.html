@@ -9687,7 +9687,6 @@ var _user$project$Math$slope = F2(
 		var _p3 = _p0;
 		return (_p3._1 - _p2._1) / (_p3._0 - _p2._0);
 	});
-var _user$project$Math$epsilon = Math.pow(10, -3);
 var _user$project$Math$distance = F2(
 	function (_p5, _p4) {
 		var _p6 = _p5;
@@ -9712,21 +9711,21 @@ var _user$project$Math$withInTol = F2(
 	function (tol, zero) {
 		return (_elm_lang$core$Native_Utils.cmp(0 - tol, zero) < 0) && (_elm_lang$core$Native_Utils.cmp(zero, tol) < 0);
 	});
-var _user$project$Math$is_between = F3(
-	function (a, c, b) {
+var _user$project$Math$is_between = F4(
+	function (epsilon, a, c, b) {
 		return A2(
 			_user$project$Math$withInTol,
-			_user$project$Math$epsilon,
+			epsilon,
 			(A2(_user$project$Math$distance, a, c) + A2(_user$project$Math$distance, c, b)) - A2(_user$project$Math$distance, a, b));
 	});
-var _user$project$Math$lineDistance = F3(
-	function (data, start, p) {
+var _user$project$Math$lineDistance = F4(
+	function (epsilon, data, start, p) {
 		var _p10 = data;
 		if (_p10.ctor === '[]') {
 			return A2(_user$project$Math$distance, start, p);
 		} else {
 			var _p11 = _p10._0;
-			return A3(_user$project$Math$is_between, start, p, _p11) ? A2(_user$project$Math$distance, start, p) : (A3(_user$project$Math$lineDistance, _p10._1, _p11, p) + A2(_user$project$Math$distance, start, _p11));
+			return A4(_user$project$Math$is_between, epsilon, start, p, _p11) ? A2(_user$project$Math$distance, start, p) : (A4(_user$project$Math$lineDistance, epsilon, _p10._1, _p11, p) + A2(_user$project$Math$distance, start, _p11));
 		}
 	});
 var _user$project$Snake$adjacentList = function (l) {
@@ -9766,38 +9765,39 @@ var _user$project$Snake$grow = F2(
 			snake,
 			{length: snake.length + x});
 	});
-var _user$project$Snake$isHeadOnTail = function (snake) {
-	var _p4 = snake.body;
-	if (_p4.ctor === '[]') {
-		return true;
-	} else {
-		var _p9 = _p4._1;
-		var _p5 = _p9;
-		if (_p5.ctor === '[]') {
-			return false;
+var _user$project$Snake$isHeadOnTail = F2(
+	function (tolerance, snake) {
+		var _p4 = snake.body;
+		if (_p4.ctor === '[]') {
+			return true;
 		} else {
-			var _p6 = _p5._1;
-			if (_p6.ctor === '[]') {
+			var _p9 = _p4._1;
+			var _p5 = _p9;
+			if (_p5.ctor === '[]') {
 				return false;
 			} else {
-				return A3(
-					_elm_lang$core$List$foldr,
-					F2(
-						function (x, y) {
-							return x || y;
-						}),
-					false,
-					A2(
-						_elm_lang$core$List$map,
-						function (_p7) {
-							var _p8 = _p7;
-							return A3(_user$project$Math$is_between, _p8._0, _p4._0, _p8._1);
-						},
-						_user$project$Snake$adjacentList(_p9)));
+				var _p6 = _p5._1;
+				if (_p6.ctor === '[]') {
+					return false;
+				} else {
+					return A3(
+						_elm_lang$core$List$foldr,
+						F2(
+							function (x, y) {
+								return x || y;
+							}),
+						false,
+						A2(
+							_elm_lang$core$List$map,
+							function (_p7) {
+								var _p8 = _p7;
+								return A4(_user$project$Math$is_between, tolerance, _p8._0, _p4._0, _p8._1);
+							},
+							_user$project$Snake$adjacentList(_p9)));
+				}
 			}
 		}
-	}
-};
+	});
 var _user$project$Snake$sameSlopeAs = F3(
 	function (p1, p2, p3) {
 		return _elm_lang$core$Native_Utils.eq(
@@ -9944,7 +9944,12 @@ var _user$project$Snake$prune = function (snake) {
 								_elm_lang$core$List$filter,
 								function (p) {
 									return _elm_lang$core$Native_Utils.cmp(
-										A3(_user$project$Math$lineDistance, _p23._1, _p23._0, p),
+										A4(
+											_user$project$Math$lineDistance,
+											Math.pow(10, -3),
+											_p23._1,
+											_p23._0,
+											p),
 										snake.length) < 1;
 								},
 								snake.body),
@@ -10009,7 +10014,8 @@ var _user$project$Init$leftof = F2(
 var _user$project$Init$blockWidth = 1;
 var _user$project$Init$growth = 3;
 var _user$project$Init$accel = 2.5e-3;
-var _user$project$Init$foodTol = 1;
+var _user$project$Init$foodRadius = 2;
+var _user$project$Init$foodTol = _user$project$Init$foodRadius + (_user$project$Init$blockWidth / 2);
 var _user$project$Init$foodInterval = 5;
 var _user$project$Init$len = 30;
 var _user$project$Init$start = {ctor: '_Tuple2', _0: 30, _1: 30};
@@ -10074,7 +10080,7 @@ var _user$project$Update$isDead = function (model) {
 	if (_p5.ctor === 'Nothing') {
 		return true;
 	} else {
-		return A2(_user$project$Update$insideGrid, model.grid, _p5._0) || _user$project$Snake$isHeadOnTail(model.snake);
+		return A2(_user$project$Update$insideGrid, model.grid, _p5._0) || A2(_user$project$Snake$isHeadOnTail, 1.0e-2, model.snake);
 	}
 };
 var _user$project$Update$nextHead = F4(
@@ -10417,22 +10423,28 @@ var _user$project$View$foodBlock = function (mp) {
 		return {
 			ctor: '::',
 			_0: A2(
-				_elm_lang$svg$Svg$circle,
+				_elm_lang$svg$Svg$image,
 				{
 					ctor: '::',
-					_0: _elm_lang$svg$Svg_Attributes$cx(
+					_0: _elm_lang$svg$Svg_Attributes$x(
 						_elm_lang$core$Basics$toString(_p6._0._0)),
 					_1: {
 						ctor: '::',
-						_0: _elm_lang$svg$Svg_Attributes$cy(
+						_0: _elm_lang$svg$Svg_Attributes$y(
 							_elm_lang$core$Basics$toString(_p6._0._1)),
 						_1: {
 							ctor: '::',
-							_0: _elm_lang$svg$Svg_Attributes$r('1'),
+							_0: _elm_lang$svg$Svg_Attributes$width(
+								_elm_lang$core$Basics$toString(_user$project$Init$foodRadius)),
 							_1: {
 								ctor: '::',
-								_0: _elm_lang$svg$Svg_Attributes$fill('red'),
-								_1: {ctor: '[]'}
+								_0: _elm_lang$svg$Svg_Attributes$height(
+									_elm_lang$core$Basics$toString(_user$project$Init$foodRadius)),
+								_1: {
+									ctor: '::',
+									_0: _elm_lang$svg$Svg_Attributes$xlinkHref('/rat.svg'),
+									_1: {ctor: '[]'}
+								}
 							}
 						}
 					}

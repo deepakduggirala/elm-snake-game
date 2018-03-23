@@ -20,8 +20,11 @@ len = 30 -- grid units
 foodInterval: Float
 foodInterval = 5 -- seconds
 
+foodRadius: Float
+foodRadius = 2
+
 foodTol: Float
-foodTol = 1
+foodTol = foodRadius + blockWidth/(2)
 
 accel : Float
 accel = 0.0025 -- speed per food

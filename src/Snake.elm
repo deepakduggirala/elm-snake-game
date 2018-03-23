@@ -48,7 +48,7 @@ prune snake =
         [] -> []
         h::t ->
           compress <|
-          List.append (List.filter (\p -> (lineDistance t h p) <= snake.length) snake.body) (maybe2list (coords snake.length snake))
+          List.append (List.filter (\p -> (lineDistance (10^(-3)) t h p) <= snake.length) snake.body) (maybe2list (coords snake.length snake))
   }
 
 lastMatch: (a -> Bool) -> List a -> (Maybe a, List a)
@@ -83,8 +83,8 @@ sameSlopeAs: Point -> Point -> Point -> Bool
 sameSlopeAs p1 p2 p3 =
   slope p1 p2 == slope p1 p3
 
-isHeadOnTail : Snake -> Bool
-isHeadOnTail snake =
+isHeadOnTail : Float -> Snake -> Bool
+isHeadOnTail tolerance snake =
   case snake.body of
     [] -> True
     h::t ->
@@ -94,7 +94,7 @@ isHeadOnTail snake =
           case t2 of
             [] -> False
             h3::t3 ->
-              List.foldr (||) False (List.map (\(p1,p2) -> is_between p1 h p2) (adjacentList t))
+              List.foldr (||) False (List.map (\(p1,p2) -> is_between tolerance p1 h p2) (adjacentList t))
 
 grow : Float -> Snake -> Snake
 grow x snake = { snake | length = snake.length + x }

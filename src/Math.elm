@@ -7,23 +7,20 @@ withInTol : Float -> Float -> Bool
 withInTol tol zero =
     -tol < zero && zero < tol
 
-lineDistance : List Point -> Point -> Point -> Float
-lineDistance data start p =
+lineDistance : Float -> List Point -> Point -> Point -> Float
+lineDistance epsilon data start p =
   case data of
     [] -> distance start p
     h::t ->
-      if is_between start p h
+      if is_between epsilon start p h
       then distance start p
-      else lineDistance t h p + distance start h
+      else lineDistance epsilon t h p + distance start h
 
 distance : Point -> Point -> Float
 distance (x1, y1) (x2, y2) = sqrt <| (x2-x1) ^ 2 + (y2-y1) ^ 2
 
-epsilon : Float
-epsilon = 10^(-3)
-
-is_between : Point -> Point -> Point -> Bool
-is_between a c b = 
+is_between : Float -> Point -> Point -> Point -> Bool
+is_between epsilon a c b = 
   withInTol epsilon <| (distance a c) + (distance c b) - (distance a b)
 
 interpolate : Point -> Point -> Float -> Point  -- can return the point that lie on the same line but outside the segment

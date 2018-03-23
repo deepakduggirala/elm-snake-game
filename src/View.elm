@@ -1,7 +1,7 @@
 module View exposing (..)
 
 import Html exposing (text, div, h2, br, button)
-import Svg exposing (svg, rect, g, circle)
+import Svg exposing (svg, rect, g, circle, image)
 import Svg.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
@@ -48,7 +48,8 @@ foodBlock mp =
   case mp of
     Nothing -> []
     Just (px, py) ->
-      [ circle [cx <| toString px, cy <| toString py, r "1", fill "red"] [] ]
+      [ image [x <| toString px, y <| toString py, width <| toString Init.foodRadius, height <| toString Init.foodRadius, xlinkHref "/rat.svg"] [] ]
+      -- [ circle [cx <| toString px, cy <| toString py, r <| toString Init.foodRadius, fill "red"] [] ]
 
 score : Model -> List (Svg.Svg Msg)
 score model =

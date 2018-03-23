@@ -108,7 +108,7 @@ isDead model =
     Nothing -> True
     Just head ->
       insideGrid model.grid head
-      || Snake.isHeadOnTail model.snake
+      || Snake.isHeadOnTail 0.01 model.snake
 
 insideGrid : Grid -> Point -> Bool
 insideGrid grid (x,y) =
