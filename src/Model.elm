@@ -31,7 +31,3 @@ type Direction
   | Right
   | Down
   | Left
-  | UR
-  | UL
-  | DR
-  | DL
