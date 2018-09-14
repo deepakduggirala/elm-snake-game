@@ -1,21 +1,19 @@
-import Html
+module Main exposing (main)
 
-import Update exposing (..)
+import Browser
+import Init exposing (..)
 import Model exposing (..)
 import Msg exposing (..)
-import View exposing (..)
 import Subscriptions exposing (..)
-import Init exposing (..)
+import Update exposing (..)
+import View exposing (..)
 
 
-
-
-main : Program Never Model Msg
+main : Program ( Int, Int ) Model Msg
 main =
-  Html.program
-    {
-      init = init,
-      update = update,
-      view = view,
-      subscriptions = subscriptions
+  Browser.element
+    { init = init
+    , update = update
+    , view = view
+    , subscriptions = subscriptions
     }
