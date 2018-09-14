@@ -36,21 +36,21 @@ toDirection k =
       Just Right
     "ArrowDown" ->
       Just Down
-    "Q" ->
-      Just UL
-    "q" ->
-      Just UL
+    "D" ->
+      Just Right
+    "d" ->
+      Just Right
     "W" ->
-      Just UR
+      Just Up
     "w" ->
-      Just UR
+      Just Up
     "A" ->
-      Just DL
+      Just Left
     "a" ->
-      Just DL
+      Just Left
     "S" ->
-      Just DR
+      Just Down
     "s" ->
-      Just DR
+      Just Down
     _ ->
       Nothing

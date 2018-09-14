@@ -20,13 +20,7 @@ notParallel d1 d2 =
 
           Left ->
             Right
-
-          DL ->
-            UR
-
-          UL ->
-            DR
-
+            
           _ ->
             d
   in
@@ -122,18 +116,6 @@ nextHead d mHead speed dt =
 
         Left ->
           ( x - ds, y )
-
-        UR ->
-          ( x + ds / s2, y + ds / s2 )
-
-        UL ->
-          ( x - ds / s2, y + ds / s2 )
-
-        DR ->
-          ( x + ds / s2, y - ds / s2 )
-
-        DL ->
-          ( x - ds / s2, y - ds / s2 )
 
 
 isDead : Model -> Bool

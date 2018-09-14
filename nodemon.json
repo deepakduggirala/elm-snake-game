@@ -1,7 +1,7 @@
 {
   "verbose": true,
-  "ignore": ["build", "elm-stuff", "node_modules"],
+  "ignore": ["build", "elm-stuff", "node_modules", "index.html"],
   "execMap": {
-    "elm": "elm make"
+    "elm": "elm make --output=build/main.js"
   }
 }
