@@ -64,6 +64,6 @@ leftof ( x, y ) xd =
 
 init : ( Int, Int ) -> ( Model, Cmd Msg )
 init (width, height) =
-  ( Model initSnake speed Up False (Grid 0 0) Nothing
+  ( Model initSnake speed Up False (Grid 0 0 width height) Nothing
   , Task.perform (\(w, h) -> Resize h w) (Task.succeed (width, height))
   )
