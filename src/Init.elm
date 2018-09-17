@@ -1,69 +1,124 @@
-module Init exposing (accel, blockWidth, foodInterval, foodRadius, foodTol, growth, init, initSnake, leftof, len, speed, start)
+module Init exposing
+    ( accel
+    , blockWidth
+    , foodInterval
+    , foodRadius
+    , growth
+    , idSnake
+    , init
+    , len
+    , resolution
+    , sf_grid_to_view
+    , sf_view_to_grid
+    , speed
+    , start
+    , viewResolution
+    )
 
+-- import Snake exposing (Point, Snake)
+
+import Browser.Events as E
+import Grid exposing (GridPoint, GridUnit, scaleTo)
 import Model exposing (..)
 import Msg exposing (..)
-import Snake exposing (Point, Snake)
+import Snake2 exposing (Snake, initSnake, updateSnake)
 import Task
-import Browser.Events as E
 
 
-speed : Float
+
+-- assume grid is 100 x 100 (later scaled to resolution), Grid module will provide functions scaleTo and scaleFrom
+-- to convert values to and from 100 x 100 grid from/to it's internal grid representation
+-- 0.0025 per 100 grid units per millisecond
+
+
+speed : GridUnit
 speed =
-  0.025   -- grid units per millisecond
+    scaleTo 0.025
 
 
-start : Point
+start : GridPoint
 start =
-  ( 30, 30 )
+    ( scaleTo 30, scaleTo 30 )
 
 
-len : Float
+idSnake : Snake
+idSnake =
+    initSnake start
+
+
+
+-- grid units
+
+
+len : GridUnit
 len =
-  30  -- grid units
+    scaleTo 30
+
+
+
+-- seconds
 
 
 foodInterval : Float
 foodInterval =
-  5   -- seconds
-
-
-foodRadius : Float
-foodRadius =
-  2
-
-
-foodTol : Float
-foodTol =
-  foodRadius + blockWidth / 2
-
-
-accel : Float
-accel =
-  0.0025  -- speed per food
-
-
-growth : Float
-growth =
-  3
+    5
 
 
 blockWidth : Float
 blockWidth =
-  1
+    1
 
 
-initSnake : Snake
-initSnake =
-  Snake.cons (leftof start 1) (Snake [ start ] len)
+foodRadius : Float
+foodRadius =
+    2
 
 
-leftof : Point -> Float -> Point
-leftof ( x, y ) xd =
-  ( x - xd, y )
+
+-- speed per food
+
+
+accel : GridUnit
+accel =
+    scaleTo 0.0025
+
+
+growth : GridUnit
+growth =
+    scaleTo 3
+
+
+viewResolution : ( Int, Int ) -> ( Int, Int )
+viewResolution ( sw, sh ) =
+    let
+        w =
+            100
+    in
+    ( w, w * sh // sw )
+
+
+s : Snake
+s =
+    Maybe.withDefault ( ( 0, 0 ), [] ) <| updateSnake ( 60, 30 ) len idSnake
+
+
+sf_grid_to_view : Float
+sf_grid_to_view =
+    100 / (2 ^ 32)
+
+
+sf_view_to_grid : Float
+sf_view_to_grid =
+    1 / sf_grid_to_view
+
+
+resolution : GridUnit
+resolution =
+    scaleTo 1
 
 
 init : ( Int, Int ) -> ( Model, Cmd Msg )
-init (width, height) =
-  ( Model initSnake speed Up False (Grid 0 0 width height) Nothing
-  , Task.perform (\(w, h) -> Resize h w) (Task.succeed (width, height))
-  )
+init ( width, height ) =
+    ( Model s speed len False Up (Grid 0 0 0 0 width height) Nothing
+    , Task.perform (\( w, h ) -> Resize h w) (Task.succeed ( width, height ))
+    )

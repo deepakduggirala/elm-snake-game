@@ -1,14 +1,14 @@
 module Msg exposing (Msg(..))
 
-import Snake exposing (Point)
-import Time
+import Grid exposing (GridPoint)
 import Model exposing (Direction)
+import Time
 
 
 type Msg
-  = KeyDirection (Maybe Direction)
-  | Tick Float
-  | Restart
-  | Resize Int Int
-  | FoodTime Time.Posix
-  | Food Point
+    = KeyDirection (Maybe Direction)
+    | Tick Float
+    | Restart
+    | Resize Int Int
+    | FoodTime Time.Posix
+    | Food GridPoint

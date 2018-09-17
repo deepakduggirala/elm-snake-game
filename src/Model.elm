@@ -1,7 +1,8 @@
 module Model exposing (Direction(..), Grid, Model)
 
+import Grid exposing (GridPoint, GridUnit)
 import Random
-import Snake exposing (Point, Snake)
+import Snake2 exposing (Snake)
 
 
 
@@ -9,25 +10,28 @@ import Snake exposing (Point, Snake)
 
 
 type alias Grid =
-  { width : Int
-  , height : Int
-  , actualWidth : Int
-  , actualHeight : Int
-  }
+    { viewWidth : Int
+    , viewHeight : Int
+    , gridWidth : Int
+    , gridHeight : Int
+    , screenWidth : Int
+    , screenHeight : Int
+    }
 
 
 type alias Model =
-  { snake : Snake
-  , speed : Float
-  , attitude : Direction
-  , dead : Bool
-  , grid : Grid
-  , food : Maybe Point
-  }
+    { snake : Snake
+    , speed : GridUnit
+    , length : GridUnit
+    , dead : Bool
+    , attitude : Direction
+    , grid : Grid
+    , food : Maybe GridPoint
+    }
 
 
 type Direction
-  = Up
-  | Right
-  | Down
-  | Left
+    = Up
+    | Right
+    | Down
+    | Left

@@ -11,9 +11,9 @@ import View exposing (..)
 
 main : Program ( Int, Int ) Model Msg
 main =
-  Browser.element
-    { init = init
-    , update = update
-    , view = view
-    , subscriptions = subscriptions
-    }
+    Browser.element
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
