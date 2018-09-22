@@ -3,6 +3,7 @@ module Init exposing
     , blockWidth
     , foodInterval
     , foodRadius
+    , foodTolerance
     , growth
     , idSnake
     , init
@@ -18,7 +19,7 @@ module Init exposing
 -- import Snake exposing (Point, Snake)
 
 import Browser.Events as E
-import Grid exposing (GridPoint, GridUnit, scaleTo)
+import Grid exposing (GridPoint, GridUnit, gridMax, scaleTo)
 import Model exposing (..)
 import Msg exposing (..)
 import Snake2 exposing (Snake, initSnake, updateSnake)
@@ -34,6 +35,15 @@ import Task
 speed : GridUnit
 speed =
     scaleTo 0.025
+
+
+
+-- speed increase per food
+
+
+accel : GridUnit
+accel =
+    scaleTo 0.0025
 
 
 start : GridPoint
@@ -74,13 +84,9 @@ foodRadius =
     2
 
 
-
--- speed per food
-
-
-accel : GridUnit
-accel =
-    scaleTo 0.0025
+foodTolerance : GridUnit
+foodTolerance =
+    scaleTo 2
 
 
 growth : GridUnit
@@ -88,28 +94,28 @@ growth =
     scaleTo 3
 
 
-viewResolution : ( Int, Int ) -> ( Int, Int )
-viewResolution ( sw, sh ) =
-    let
-        w =
-            100
-    in
-    ( w, w * sh // sw )
-
-
-s : Snake
-s =
-    Maybe.withDefault ( ( 0, 0 ), [] ) <| updateSnake ( 60, 30 ) len idSnake
-
-
 sf_grid_to_view : Float
 sf_grid_to_view =
-    100 / (2 ^ 32)
+    100 / toFloat gridMax
 
 
 sf_view_to_grid : Float
 sf_view_to_grid =
     1 / sf_grid_to_view
+
+
+viewResolution : ( Int, Int ) -> ( Int, Int )
+viewResolution ( sw, sh ) =
+    let
+        h =
+            100
+    in
+    ( h * sw // sh, h )
+
+
+s : Snake
+s =
+    Maybe.withDefault ( ( 0, 0 ), [] ) <| updateSnake ( scaleTo 60, scaleTo 30 ) len idSnake
 
 
 resolution : GridUnit

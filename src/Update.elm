@@ -1,6 +1,6 @@
 module Update exposing (foodGenerator, insideGrid, isDead, nearFood, nextHead, notParallel, update)
 
-import Grid exposing (GridPoint, GridUnit, distance, gridPointEqual, gridResolution, origin, translate)
+import Grid exposing (GridPoint, GridUnit, distance, gridResolution, origin, translate)
 import Init exposing (..)
 import Maybe
 import Model exposing (..)
@@ -149,4 +149,13 @@ insideGrid grid ( x, y ) =
 
 nearFood : Model -> Bool
 nearFood model =
-    Maybe.withDefault False <| Maybe.map (gridPointEqual (head model.snake)) model.food
+    case model.food of
+        Nothing ->
+            False
+
+        Just f ->
+            let
+                d =
+                    distance (head model.snake) f
+            in
+            d <= Init.foodTolerance

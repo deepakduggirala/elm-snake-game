@@ -47,7 +47,7 @@ coords s x =
                     distance h h2
             in
             if x <= d then
-                interpolate h h2 d
+                interpolate h h2 x
 
             else
                 coords ( h2, t2 ) (x - d)

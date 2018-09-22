@@ -7,6 +7,7 @@ module Grid exposing
     , distance
     , distance_in_grid
     , doIntersect
+    , gridMax
     , gridPointEqual
     , gridResolution
     , interpolate
@@ -22,6 +23,11 @@ module Grid exposing
     , translate
     , turn_point
     )
+
+
+gridMax : Int
+gridMax =
+    2 ^ 15
 
 
 type alias GridUnit =
@@ -176,12 +182,12 @@ sign x =
 
 scaleTo : Float -> GridUnit
 scaleTo x =
-    truncate (x * (2 ^ 32) / 100)
+    truncate (x * toFloat gridMax / 100)
 
 
 scaleFrom : GridUnit -> Float
 scaleFrom x =
-    toFloat x * 100 / (2 ^ 32)
+    toFloat x * 100 / toFloat gridMax
 
 
 scalePointTo : Float -> ( Float, Float ) -> GridPoint
@@ -209,9 +215,9 @@ translate ( px, py ) ( ( x1, y1 ), ( x2, y2 ) ) =
 
 
 gridResolution : ( Int, Int ) -> ( Int, Int )
-gridResolution ( sw, sh ) =
+gridResolution ( screen_width, screen_height ) =
     let
-        gw =
-            2 ^ 32
+        gh =
+            gridMax
     in
-    ( gw, truncate <| toFloat gw * (toFloat sh / toFloat sw) )
+    ( truncate <| toFloat gh * (toFloat screen_width / toFloat screen_height), gh )

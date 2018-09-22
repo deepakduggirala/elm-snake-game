@@ -17,11 +17,9 @@ subscriptions model =
         False ->
             Sub.batch
                 [ onKeyDown keyDecoder
-
-                -- , onAnimationFrameDelta Tick
+                , onAnimationFrameDelta Tick
                 , onResize (\h w -> Resize w h)
-
-                -- , Time.every (1000 * Init.foodInterval) FoodTime
+                , Time.every (1000 * Init.foodInterval) FoodTime
                 ]
 
 

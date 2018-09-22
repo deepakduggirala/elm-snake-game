@@ -117,8 +117,15 @@ range start step stop =
     let
         base =
             List.range 0 ((stop - start) // step)
+
+        r =
+            List.map ((*) step >> (+) start) base
     in
-    List.map ((*) step >> (+) start) base
+    if modBy step (stop - start) == 0 then
+        r
+
+    else
+        r ++ [ stop ]
 
 
 getViewBox : Grid -> String
