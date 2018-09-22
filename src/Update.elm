@@ -6,7 +6,7 @@ import Maybe
 import Model exposing (..)
 import Msg exposing (..)
 import Random
-import Snake2 exposing (Snake, coords, head, updateSnake)
+import Snake exposing (Snake, coords, head, updateSnake)
 import Time
 
 

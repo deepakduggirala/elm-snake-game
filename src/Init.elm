@@ -22,7 +22,7 @@ import Browser.Events as E
 import Grid exposing (GridPoint, GridUnit, gridMax, scaleTo)
 import Model exposing (..)
 import Msg exposing (..)
-import Snake2 exposing (Snake, initSnake, updateSnake)
+import Snake exposing (Snake, initSnake, updateSnake)
 import Task
 
 

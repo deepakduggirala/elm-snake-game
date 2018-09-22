@@ -2,7 +2,7 @@ module Model exposing (Direction(..), Grid, Model)
 
 import Grid exposing (GridPoint, GridUnit)
 import Random
-import Snake2 exposing (Snake)
+import Snake exposing (Snake)
 
 
 

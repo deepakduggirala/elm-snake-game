@@ -1,171 +1,115 @@
-module Snake exposing (Point, Snake, adjacentList, cons, coords, grow, head, isHeadOnTail)
+module Snake exposing (Snake, adjacentList, any, append, coords, head, initSnake, isHeadOnTail, prune, updateSnake)
 
-import Math exposing (..)
-import Nonempty exposing (..)
-
-
-type alias Point =
-    ( Float, Float )
+import Grid exposing (..)
+import Tuple exposing (first, second)
 
 
 type alias Snake =
-    { body : List Point
-    , length : Float
-    }
+    ( GridPoint, List GridPoint )
 
 
-head : Snake -> Maybe Point
-head =
-    coords 0
+initSnake : GridPoint -> Snake
+initSnake p =
+    ( p, [] )
 
 
-coords : Float -> Snake -> Maybe Point
-coords l snake =
-    case snake.body of
-        [] ->
-            Nothing
+updateSnake : GridPoint -> GridUnit -> Snake -> Maybe Snake
+updateSnake new_head new_length old_snake =
+    let
+        d =
+            distance new_head (coords old_snake 0)
 
-        [ h ] ->
-            Just h
+        s =
+            prune (new_length - d) old_snake
+    in
+    if isHeadOnTail new_head s then
+        Nothing
 
-        h :: h2 :: t ->
-            Just <| pointAlongLine (fromList h2 t) h l
+    else if d == 0 then
+        Just s
+
+    else
+        Just <| append new_head s
 
 
-pointAlongLine : Nonempty Point -> Point -> Float -> Point
-pointAlongLine data start l =
-    case data of
-        Elem h ->
-            interpolate start h l
+coords : Snake -> GridUnit -> GridPoint
+coords s x =
+    case ( s, x ) of
+        ( _, 0 ) ->
+            first s
 
-        Cons h t ->
+        ( ( h, [] ), _ ) ->
+            h
+
+        ( ( h, h2 :: t2 ), _ ) ->
             let
                 d =
-                    distance start h
+                    distance h h2
             in
-            if l < d then
-                interpolate start h l
+            if x <= d then
+                interpolate h h2 x
 
             else
-                pointAlongLine t h (l - d)
+                coords ( h2, t2 ) (x - d)
 
 
-cons : Point -> Snake -> Snake
-cons new_head snake =
-    prune
-        { snake
-            | body = new_head :: snake.body
-        }
+head : Snake -> GridPoint
+head s =
+    coords s 0
 
 
-prune : Snake -> Snake
-prune snake =
-    { snake
-        | body =
-            case snake.body of
-                [] ->
-                    []
+prune : GridUnit -> Snake -> Snake
+prune x s =
+    case s of
+        ( _, [] ) ->
+            s
 
-                h :: t ->
-                    compress <|
-                        List.append (List.filter (\p -> lineDistance (10 ^ -3) t h p <= snake.length) snake.body) (maybe2list (coords snake.length snake))
-    }
-
-
-lastMatch : (a -> Bool) -> List a -> ( Maybe a, List a )
-lastMatch pred xs =
-    case xs of
-        [] ->
-            ( Nothing, [] )
-
-        h :: t ->
-            if pred h then
-                case lastMatch pred t of
-                    ( Nothing, rest ) ->
-                        ( Just h, t )
-
-                    ( Just match, rest ) ->
-                        ( Just match, rest )
+        ( h, h2 :: t2 ) ->
+            let
+                d =
+                    distance h h2
+            in
+            if x <= d then
+                ( h, [ interpolate h h2 x ] )
 
             else
-                case lastMatch pred t of
-                    ( Nothing, rest ) ->
-                        ( Nothing, h :: rest )
-
-                    ( Just match, rest ) ->
-                        ( Just match, rest )
+                append h (prune (x - d) ( h2, t2 ))
 
 
-compress : List Point -> List Point
-compress points =
-    case points of
+append : GridPoint -> Snake -> Snake
+append a s =
+    ( a, first s :: second s )
+
+
+isHeadOnTail : GridPoint -> Snake -> Bool
+isHeadOnTail new_head s =
+    let
+        l =
+            adjacentList <| second s
+
+        new_segment =
+            ( new_head, first s )
+    in
+    any <| List.map (doIntersect new_segment) l
+
+
+
+-- Helper functions
+
+
+adjacentList : List GridPoint -> List ( GridPoint, GridPoint )
+adjacentList ps =
+    case ps of
         [] ->
             []
 
-        h :: t ->
-            case t of
-                [] ->
-                    [ h ]
-
-                h2 :: t2 ->
-                    case lastMatch (sameSlopeAs h h2) t2 of
-                        ( Nothing, rest ) ->
-                            h :: compress (h2 :: rest)
-
-                        ( Just match, rest ) ->
-                            h :: compress (match :: rest)
-
-
-sameSlopeAs : Point -> Point -> Point -> Bool
-sameSlopeAs p1 p2 p3 =
-    slope p1 p2 == slope p1 p3
-
-
-isHeadOnTail : Float -> Snake -> Bool
-isHeadOnTail tolerance snake =
-    case snake.body of
-        [] ->
-            True
-
-        h :: t ->
-            case t of
-                [] ->
-                    False
-
-                h2 :: t2 ->
-                    case t2 of
-                        [] ->
-                            False
-
-                        h3 :: t3 ->
-                            List.foldr (||) False (List.map (\( p1, p2 ) -> is_between tolerance p1 h p2) (adjacentList t))
-
-
-grow : Float -> Snake -> Snake
-grow x snake =
-    { snake | length = snake.length + x }
-
-
-maybe2list : Maybe a -> List a
-maybe2list ma =
-    case ma of
-        Nothing ->
+        h :: [] ->
             []
 
-        Just a ->
-            [ a ]
+        h :: h2 :: t ->
+            ( h, h2 ) :: adjacentList (h2 :: t)
 
 
-adjacentList : List a -> List ( a, a )
-adjacentList l =
-    case l of
-        [] ->
-            []
-
-        h :: t ->
-            case t of
-                [] ->
-                    []
-
-                h2 :: t2 ->
-                    ( h, h2 ) :: adjacentList (h2 :: t2)
+any : List Bool -> Bool
+any =
+    List.foldr (||) False

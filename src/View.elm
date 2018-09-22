@@ -16,7 +16,7 @@ import Html.Events exposing (onClick)
 import Init
 import Model exposing (..)
 import Msg exposing (..)
-import Snake2 exposing (Snake, coords)
+import Snake exposing (Snake, coords)
 import String
 import Svg exposing (circle, g, image, rect, svg)
 import Svg.Attributes exposing (..)
